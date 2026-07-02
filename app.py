@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 import requests
 import numpy as np
 import pandas as pd
@@ -177,7 +177,7 @@ if app_mode == "Single City Deep-Dive":
                     <p style="font-family: Arial, sans-serif;"><strong>Target Domain Location:</strong> {city_name} (Lat: {lat}, Lon: {lon})</p>
                     <p style="font-family: Arial, sans-serif;"><strong>Patient Stratification Profile:</strong> {cohort_profile}</p>
                     <p style="font-family: Arial, sans-serif;"><strong>Hemodynamic Loading Factor:</strong> {blood_pressure_state}</p>
-                    <hr style="border: 0; border-top: 1px solid #ccc verso;"/>
+                    <hr style="border: 0; border-top: 1px solid #ccc;"/>
                     <h3 style="color: #2980b9; font-family: Arial, sans-serif;">Simulated Quantitative Endpoint Results:</h3>
                     <ul style="font-family: Arial, sans-serif; font-size: 14px;">
                         <li><strong>Peak Atmospheric Heat-Stress Displacement Metric:</strong> {max_stress:.2f} °C above critical threshold parameters.</li>
@@ -201,38 +201,3 @@ else:
         st.subheader(" Location A")
         lat_a = st.number_input("Lat A", value=36.8065, format="%.4f")
         lon_a = st.number_input("Lon A", value=10.1815, format="%.4f")
-    with col_b:
-        st.subheader(" Location B")
-        lat_b = st.number_input("Lat B", value=50.8503, format="%.4f")
-        lon_b = st.number_input("Lon B", value=4.3517, format="%.4f")
-        
-    city_a_name = get_location_name(lat_a, lon_a)
-    city_b_name = get_location_name(lat_b, lon_b)
-        
-    if st.button(" Execute Cross-Comparison Engine"):
-        with st.spinner("Processing parallel satellite caches..."):
-            df_a = fetch_and_model(lat_a, lon_a, start_date, end_date, bbb_gain, m1_gain, shear_stress_multiplier)
-            df_b = fetch_and_model(lat_b, lon_b, start_date, end_date, bbb_gain, m1_gain, shear_stress_multiplier)
-            
-            if df_a is not None and df_b is not None:
-                st.subheader(f" Comparative Neuroinflammatory Metrics [{cohort_profile}]")
-                fig_comp, (ax_bbb, ax_m1) = plt.subplots(1, 2, figsize=(14, 5))
-                
-                # Plot BBB comparison
-                ax_bbb.plot(df_a['Date'], df_a['BBB_Leakage'], label=f"{city_a_name}", color="#e67e22", linewidth=2.5)
-                ax_bbb.plot(df_b['Date'], df_b['BBB_Leakage'], label=f"{city_b_name}", color="#9b59b6", linewidth=2.5, linestyle="--")
-                ax_bbb.set_title("Blood-Brain Barrier Permeability Overlap Spectrum")
-                ax_bbb.set_ylabel("Leakage Index (0-1 Range)")
-                ax_bbb.legend()
-                ax_bbb.tick_params(axis='x', rotation=45)
-                
-                # Plot Microglia comparison
-                ax_m1.plot(df_a['Date'], df_a['Microglia_M1'], label=f"{city_a_name}", color="#e67e22", linewidth=2.5)
-                ax_m1.plot(df_b['Date'], df_b['Microglia_M1'], label=f"{city_b_name}", color="#9b59b6", linewidth=2.5, linestyle="--")
-                ax_m1.set_title("Microglial M1 Activation Line Comparisons")
-                ax_m1.set_ylabel("Activation Spectrum (0-1 Range)")
-                ax_m1.legend()
-                ax_m1.tick_params(axis='x', rotation=45)
-                
-                fig_comp.tight_layout()
-                st.pyplot(fig_comp)
