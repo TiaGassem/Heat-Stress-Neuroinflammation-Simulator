@@ -8,6 +8,7 @@ from scipy.integrate import odeint
 
 st.set_page_config(page_title="Heat-Stress Neuroinflammation Simulator (Educational)", layout="wide")
 st.title("Heat-Stress Neuroinflammation Simulator")
+
 st.markdown("""
 **Author:** Tasnim | Independent student computational project (M.Sc. thesis-adjacent, not part of the official thesis)
 
