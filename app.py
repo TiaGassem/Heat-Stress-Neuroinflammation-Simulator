@@ -1,4 +1,3 @@
-
 import streamlit as st
 import requests
 import numpy as np
@@ -13,7 +12,7 @@ from scipy.integrate import odeint
 st.set_page_config(page_title="Heat-Stress Neuroinflammation Simulator (Educational)", layout="wide")
 
 st.title("Heat-Stress Neuroinflammation Simulator")
-st.markdown("""
+st.markdown
 **Author:** Tasnim | Independent student computational project (M.Sc. thesis-adjacent, not part of the official thesis)
 
 This is an educational, hypothesis-generating simulation. It combines real historical
