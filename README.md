@@ -1,7 +1,7 @@
  Heat-Stress Neuroinflammation Simulator
 
 Launch the live app
- 
+ https://heat-stress-neuroinflammation-simulator-qebvnrydyxvbpxavfybq4u.streamlit.app/
 
 
 What this is
