@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import requests
 import numpy as np
 import pandas as pd
@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.integrate import odeint
 
+# Set page layout configuration
 st.set_page_config(page_title="Heat-Stress Neuroinflammation Simulator (Educational)", layout="wide")
 st.title("Heat-Stress Neuroinflammation Simulator")
 
@@ -182,6 +183,9 @@ if app_mode == "Single Location Deep-Dive":
         with st.spinner("Fetching reanalysis weather data and integrating model..."):
             data = fetch_and_model(lat, lon, start_date, end_date, bbb_gain, m1_gain, shear_stress_multiplier)
             if data is not None:
+                # Clear all previous figures to ensure no silent buffer crashes
+                plt.close('all')
+                
                 c1, c2 = st.columns([2, 1])
                 with c1:
                     st.subheader(f"Simulated Kinetic Curves for: {city_name}")
@@ -202,4 +206,158 @@ if app_mode == "Single Location Deep-Dive":
 
                     lns = line1 + line2 + line3
                     labs = [l.get_label() for l in lns]
-                    ax1.legend(lns, labs, loc='upper center', bbox_to_anchor=(0.5, -0.2))
+                    ax1.legend(lns, labs, loc='lower left', frameon=True)
+
+                    fig.tight_layout()
+                    st.pyplot(fig)
+                    plt.close(fig) # Secure garbage collection
+
+                    st.markdown("""
+                    ### Rigorous Chart Analysis & Legend Guide
+                    * **Solid Red Curve (Left Axis):** Atmospheric Thermal Stress Velocity. Environmental workload tracking above normal homeostasis baselines.
+                    * **Dashed Blue Curve (Right Axis):** Blood-Brain Barrier (BBB) Structural Breakdown. Permeability of tight junctions. Values moving toward 1.0 signal critical barrier cleavage.
+                    * **Solid Black Curve (Right Axis):** Microglial M1 Phenotypic Activation Rate. Downstream transition into active neurotoxic expressions.
+                    * **Shaded Bands:** ±20% one-parameter sensitivity sweep on the model's gain constants.
+                    """)
+
+                with c2:
+                    st.subheader("Automated Matrix Logs")
+                    st.dataframe(data[['Date', 'Anomaly', 'BBB_Leakage', 'Microglia_M1']].style.format(precision=3), use_container_width=True)
+
+                # -----------------------------------------------------------
+                # TRANSLATIONAL BIOMEDICAL PREDICTIVE REPORT
+                # -----------------------------------------------------------
+                st.markdown("---")
+                st.header("TRANSLATIONAL BIOMEDICAL PREDICTIVE REPORT")
+                
+                # Metadata Metrics Block
+                meta_col1, meta_col2, meta_col3 = st.columns(3)
+                with meta_col1:
+                    st.metric("Target Domain Location", f"{city_name} (Lat: {lat}, Lon: {lon})")
+                with meta_col2:
+                    st.metric("Patient Stratification Profile", cohort_profile)
+                with meta_col3:
+                    st.metric("Hemodynamic Loading Factor", blood_pressure_state)
+
+                max_stress = data['Anomaly'].max()
+                max_bbb = data['BBB_Leakage'].max()
+                max_m1 = data['Microglia_M1'].max()
+
+                # Pathokinetic logic mapping
+                if max_bbb > 0.75:
+                    bbb_status = "CRITICAL ENDOTHELIAL SHEAR STRESS METRICS OBSERVED"
+                    bbb_color = "red"
+                else:
+                    bbb_status = "STABLE/MODERATE BREAKDOWN COEFFICIENTS DETECTED"
+                    bbb_color = "orange"
+
+                if max_m1 > 0.60:
+                    m1_status = "ACCELERATED NEUROIMMUNE PATHWAY ACTIVATION CONFIRMED"
+                    m1_color = "red"
+                else:
+                    m1_status = "REGULATED PATHWAY TRAJECTORY MAINTAINED"
+                    m1_color = "green"
+
+                # Core Report Rendering
+                rep_col1, rep_col2 = st.columns(2)
+                with rep_col1:
+                    st.subheader("Simulated Quantitative Endpoint Results")
+                    st.markdown(f"""
+                    * **Peak Atmospheric Heat-Stress Displacement Metric:** {max_stress:.2f} °C above baseline threshold parameters.
+                    * **Maximum Predicted Endothelial Disruption Index:** {(max_bbb*100):.1f}% functional breakdown variance.
+                    * **Peak Simulated Microglial M1 Phenotypic Transgression Matrix:** {(max_m1*100):.1f}% state cellular activation.
+                    """)
+
+                with rep_col2:
+                    st.subheader("Automated Pathokinetic Interpretation")
+                    st.markdown(f"""
+                    * **Endothelial Barrier Integrity Status:** :{bbb_color}[{bbb_status}] — The simulated tight junction breakdown velocity mirrors elevated degradation properties under sustained thermal stress workloads.
+                    * **Neuroimmune Activation Pathway Response:** :{m1_color}[{m1_status}] — Microglial polarization tracking highlights clear progression loops dependent on structural vascular leak parameters.
+                    * **Compounded Environmental Risk Analysis:** Environmental heat workloads of {max_stress:.2f}°C act as a strong kinetics accelerator when matched with the selected physiological parameters.
+                    """)
+
+                st.caption("*Verification Parameter Disclosure Note: Rates calibrated dynamically utilizing foundational cellular acceleration guidelines from Montagne et al. and Perry & Holmes qualitative directions.*")
+
+                # Reconstruct Plain Text Download Data Block
+                raw_download_text = f"""TRANSLATIONAL BIOMEDICAL PREDICTIVE REPORT -- SIMULATION OUTPUT
+================================================================================
+Target Domain Location: {city_name} (Lat: {lat}, Lon: {lon})
+Patient Stratification Profile: {cohort_profile}
+Hemodynamic Loading Factor: {blood_pressure_state}
+--------------------------------------------------------------------------------
+
+SIMULATED QUANTITATIVE ENDPOINT RESULTS:
+* Peak Atmospheric Heat-Stress Displacement Metric: {max_stress:.2f} °C above baseline parameters.
+* Maximum Predicted Endothelial Disruption Index (BBB Leakage): {(max_bbb*100):.1f}% functional breakdown variance.
+* Peak Simulated Microglial M1 Phenotypic Transgression Matrix: {(max_m1*100):.1f}% state cellular activation.
+
+AUTOMATED PATHOKINETIC INTERPRETATION:
+* Endothelial Barrier Integrity Status: {bbb_status}
+* Neuroimmune Activation Pathway Response: {m1_status}
+* Compounded Environmental Risk Analysis: Environmental heat workload of {max_stress:.2f}°C acts as an operational accelerator.
+
+DISCLAIMER: Non-clinical, non-predictive portfolio simulation. Rate constants are illustrative estimates and are not fitted to real clinical patient matrices.
+"""
+                st.markdown("### Export Artifact Data")
+                st.download_button(
+                    label="Download Full Biomedical Report (.txt)",
+                    data=raw_download_text,
+                    file_name=f"Predictive_Report_{city_name.replace(' ', '_')}.txt",
+                    mime="text/plain"
+                )
+            else:
+                st.error("Could not retrieve weather data. Check your coordinates and connection, then try again.")
+
+# ---------------------------------------------------------------------------
+# FRONTEND: TWO-LOCATION COMPARISON VIEW
+# ---------------------------------------------------------------------------
+else:
+    st.header("Two-Location Comparison")
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.subheader("Location A")
+        lat_a = st.number_input("Latitude A", value=36.8065, format="%.4f")
+        lon_a = st.number_input("Longitude A", value=10.1815, format="%.4f")
+    with col_b:
+        st.subheader("Location B")
+        lat_b = st.number_input("Latitude B", value=50.8503, format="%.4f")
+        lon_b = st.number_input("Longitude B", value=4.3517, format="%.4f")
+
+    city_a_name = get_location_name(lat_a, lon_a)
+    city_b_name = get_location_name(lat_b, lon_b)
+
+    if st.button("Run Comparison"):
+        with st.spinner("Fetching reanalysis weather data for both locations..."):
+            df_a = fetch_and_model(lat_a, lon_a, start_date, end_date, bbb_gain, m1_gain, shear_stress_multiplier)
+            df_b = fetch_and_model(lat_b, lon_b, start_date, end_date, bbb_gain, m1_gain, shear_stress_multiplier)
+
+            if df_a is not None and df_b is not None:
+                plt.close('all')
+                st.subheader(f"Comparison under scenario: {cohort_profile}")
+                fig_comp, (ax_bbb, ax_m1) = plt.subplots(1, 2, figsize=(14, 5))
+
+                ax_bbb.plot(df_a['Date'], df_a['BBB_Leakage'], label=f"{city_a_name}", color="#e67e22", linewidth=2.5)
+                ax_bbb.plot(df_b['Date'], df_b['BBB_Leakage'], label=f"{city_b_name}", color="#9b59b6", linewidth=2.5, linestyle="--")
+                ax_bbb.set_title("Simulated BBB Permeability")
+                ax_bbb.set_ylabel("Model output (0-1 scale)")
+                ax_bbb.legend()
+                ax_bbb.tick_params(axis='x', rotation=45)
+
+                ax_m1.plot(df_a['Date'], df_a['Microglia_M1'], label=f"{city_a_name}", color="#e67e22", linewidth=2.5)
+                ax_m1.plot(df_b['Date'], df_b['Microglia_M1'], label=f"{city_b_name}", color="#9b59b6", linewidth=2.5, linestyle="--")
+                ax_m1.set_title("Simulated Microglial M1 Activation")
+                ax_m1.set_ylabel("Model output (0-1 scale)")
+                ax_m1.legend()
+                ax_m1.tick_params(axis='x', rotation=45)
+
+                fig_comp.tight_layout()
+                st.pyplot(fig_comp)
+                plt.close(fig_comp)
+
+                st.markdown("""
+                ##### Comparison Legend
+                * **Solid orange line:** Location A.
+                * **Dashed purple line:** Location B.
+                """)
+            else:
+                st.error("Could not retrieve weather data for one or both locations. Check coordinates and connection.")
