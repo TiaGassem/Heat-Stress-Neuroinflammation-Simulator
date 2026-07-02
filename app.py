@@ -202,4 +202,4 @@ if app_mode == "Single Location Deep-Dive":
 
                     lns = line1 + line2 + line3
                     labs = [l.get_label() for l in lns]
-                    ax1.legend(lns, labs, loc='upper center', bbox_to_anchor=(0.5, -0.2
+                    ax1.legend(lns, labs, loc='upper center', bbox_to_anchor=(0.5, -0.2))
