@@ -1,7 +1,3 @@
-=================================================================================
-Environmental Heat-Stress / Neuroinflammation Mechanistic Simulator (Educational)
-=================================================================================
-
 import streamlit as st
 import requests
 import numpy as np
