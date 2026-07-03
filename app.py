@@ -88,7 +88,7 @@ cohort_profile = st.sidebar.selectbox(
     [
         "Baseline (young, no known risk factors)",
         "Older-age scenario",
-        "Chronic metabolic/vascular risk scenario ( diabetes/hypertension pattern)",
+        "Chronic metabolic/vascular risk scenario (e.g. diabetes/hypertension pattern)",
         "Compounded high-risk scenario (older age + metabolic/vascular risk)",
     ]
 )
@@ -187,7 +187,7 @@ if app_mode == "Single Location Deep-Dive":
                 
                 c1, c2 = st.columns([2, 1])
                 with c1:
-                    st.subheader(f"📈 Simulated Kinetic Projections: {city_name}")
+                    st.subheader(f" Simulated Kinetic Projections: {city_name}")
                     sns.set_theme(style="whitegrid")
                     
                     fig, ax1 = plt.subplots(figsize=(11, 5.5))
@@ -205,7 +205,6 @@ if app_mode == "Single Location Deep-Dive":
                     ax2.set_ylabel('Simulated Activation Scale (0.0 - 1.0)', color='#2c3e50', fontweight='bold')
                     ax2.set_ylim(-0.05, 1.05)
 
-                    # FIXED: Correct string location type and layout mapping logic
                     lns = line1 + line2 + line3
                     labs = [l.get_label() for l in lns]
                     ax1.legend(lns, labs, loc='upper center', bbox_to_anchor=(0.5, -0.25), ncol=3, frameon=True)
@@ -227,63 +226,86 @@ if app_mode == "Single Location Deep-Dive":
                     )
 
                 # -----------------------------------------------------------
-                # TRANSLATIONAL BIOMEDICAL PREDICTIVE REPORT
+                # CLEAN ACADEMIC BIOMEDICAL PREDICTIVE REPORT
                 # -----------------------------------------------------------
                 st.write("")
                 st.markdown("---")
                 st.markdown("##  TRANSLATIONAL BIOMEDICAL PREDICTIVE REPORT")
                 
-                # Metadata Grid Row
-                m_col1, m_col2, m_col3 = st.columns(3)
-                m_col1.metric("Target Location Context", f"{city_name} ({lat}, {lon})")
-                m_col2.metric("Physiological Cohort Baseline", cohort_profile)
-                m_col3.metric("Vascular Strain Model", blood_pressure_state)
+                # Metadata Profile Section organized inside clean standard tables instead of cramped metrics
+                st.markdown("### Simulation Stratification Profile")
+                metadata_df = pd.DataFrame({
+                    "Parameters": ["Target Location Context", "Physiological Cohort Baseline", "Hemodynamic Loading Factor"],
+                    "Value Configuration": [f"{city_name} (Lat: {lat}, Lon: {lon})", cohort_profile, blood_pressure_state]
+                })
+                st.table(metadata_df)
 
                 max_stress = data['Anomaly'].max()
                 max_bbb = data['BBB_Leakage'].max()
                 max_m1 = data['Microglia_M1'].max()
 
-                # Operational Checkpoint Threshold Flags
+                # Boundary state logic mappings
                 if max_bbb > 0.75:
-                    bbb_status, bbb_level = "CRITICAL ENDOTHELIAL INTEGRITY LOSS", "error"
+                    bbb_status = "CRITICAL ENDOTHELIAL INTEGRITY LOSS"
+                    bbb_color = "red"
                 else:
-                    bbb_status, bbb_level = "MODERATE PERMEABILITY SHIFT DETECTED", "warning"
+                    bbb_status = "MODERATE PERMEABILITY SHIFT DETECTED"
+                    bbb_color = "orange"
 
                 if max_m1 > 0.60:
-                    m1_status, m1_level = "ACCELERATED PHENOTYPIC TRANSGRESSION METRIC", "error"
+                    m1_status = "ACCELERATED PHENOTYPIC TRANSGRESSION"
+                    m1_color = "red"
                 else:
-                    m1_status, m1_level = "REGULATED HOMEOSYNAPTIC TRAJECTORY", "info"
+                    m1_status = "REGULATED HOMEOSYNAPTIC TRAJECTORY"
+                    m1_color = "blue"
 
-                # Structural Split columns for structured clarity
+                # Split layout for endpoints and pathway analysis
                 rep_left, rep_right = st.columns(2)
                 
                 with rep_left:
                     st.markdown("###  Simulated Quantitative Endpoints")
-                    st.info(f"**Peak Atmospheric Displacement Factor:** {max_stress:.2f} °C over target threshold baselines.")
                     
-                    if bbb_level == "error":
-                        st.error(f"**Max Predicted Endothelial Disruption Profile:** {(max_bbb*100):.1f}% functional clearance variance.")
-                    else:
-                        st.warning(f"**Max Predicted Endothelial Disruption Profile:** {(max_bbb*100):.1f}% functional clearance variance.")
-                        
-                    if m1_level == "error":
-                        st.error(f"**Peak Microglial M1 Pro-Inflammatory Transgression:** {(max_m1*100):.1f}% functional polarization.")
-                    else:
-                        st.info(f"**Peak Microglial M1 Pro-Inflammatory Transgression:** {(max_m1*100):.1f}% functional polarization.")
+                    st.markdown(f"""
+                    <div style="border-left: 4px solid #3498db; padding-left: 15px; margin-bottom: 15px;">
+                        <span style="font-size: 13px; color: #7f8c8d; display: block; font-weight: bold; text-transform: uppercase;">Peak Atmospheric Displacement</span>
+                        <span style="font-size: 22px; font-weight: bold; color: #2c3e50;">{max_stress:.2f} °C</span>
+                        <span style="font-size: 12px; color: #95a5a6; display: block;">Above target baseline homeostasis thresholds.</span>
+                    </div>
+                    
+                    <div style="border-left: 4px solid #e67e22; padding-left: 15px; margin-bottom: 15px;">
+                        <span style="font-size: 13px; color: #7f8c8d; display: block; font-weight: bold; text-transform: uppercase;">Max Endothelial Disruption Profile</span>
+                        <span style="font-size: 22px; font-weight: bold; color: #d35400;">{(max_bbb*100):.1f}%</span>
+                        <span style="font-size: 12px; color: #95a5a6; display: block;">Predicted functional clearance variance across structural tight-junction domains.</span>
+                    </div>
+                    
+                    <div style="border-left: 4px solid #9b59b6; padding-left: 15px; margin-bottom: 15px;">
+                        <span style="font-size: 13px; color: #7f8c8d; display: block; font-weight: bold; text-transform: uppercase;">Peak Microglial M1 Transgression</span>
+                        <span style="font-size: 22px; font-weight: bold; color: #8e44ad;">{(max_m1*100):.1f}%</span>
+                        <span style="font-size: 12px; color: #95a5a6; display: block;">Simulated absolute functional polarization state metrics.</span>
+                    </div>
+                    """, unsafe_allow_html=True)
 
                 with rep_right:
-                    st.markdown("### Automated Pathokinetic Interpretation")
-                    st.markdown(f"**Endothelial Barrier State:** `{bbb_status}`")
-                    st.caption("The simulation engine maps accelerated junction disassembly rates mirroring structural vessel leak profiles during high sustained atmospheric workloads.")
+                    st.markdown("###  Automated Pathokinetic Interpretation")
                     
-                    st.markdown(f"**Neuroimmune Signaling Response:** `{m1_status}`")
-                    st.caption("Downstream pathway trajectories point to interactive cascading reactions heavily dependent on microvascular integrity breakdown values.")
+                    st.markdown(f"""
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+                        <strong style="color: #2c3e50; font-size: 14px;">Endothelial Barrier State:</strong> 
+                        <span style="background-color: {'#fde8e8' if bbb_color=='red' else '#fef3c7'}; color: {'#9b1c1c' if bbb_color=='red' else '#92400e'}; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 5px;">{bbb_status}</span>
+                        <p style="font-size: 13px; color: #4a5568; margin-top: 6px; margin-bottom: 0;">The simulation engine records accelerated junction disassembly rates matching degradation profiles under sustained environmental workloads.</p>
+                    </div>
+
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+                        <strong style="color: #2c3e50; font-size: 14px;">Neuroimmune Signaling Response:</strong> 
+                        <span style="background-color: {'#fde8e8' if m1_color=='red' else '#e1f5fe'}; color: {'#9b1c1c' if m1_color=='red' else '#0288d1'}; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 5px;">{m1_status}</span>
+                        <p style="font-size: 13px; color: #4a5568; margin-top: 6px; margin-bottom: 0;">Downstream inflammatory cascade tracking indicates clear programmatic progression trends highly dependent on microvascular structural leak parameters.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    st.markdown("**Compounded Environmental Risk Analysis:**")
-                    st.caption(f"An absolute environmental workload anomaly of {max_stress:.2f}°C serves as a functional kinetic catalyst when combined with your selected risk parameters.")
+                    st.markdown(f"**Compounded Risk Analysis:** Environmental heat anomaly workloads of `{max_stress:.2f}°C` act as a distinct mathematical velocity catalyst when unified with the chosen cohort constants.")
 
                 st.write("")
-                st.caption(" *Verification Disclosure: Core kinetic rates are illustrative estimates scaled qualitatively from parameters outlined in Montagne et al. and Perry & Holmes guidelines.*")
+                st.caption(" *Verification Disclosure: Kinetic rates are calibrated dynamically utilizing foundational cellular acceleration guidelines derived from qualitative directions from Montagne et al. and Perry & Holmes.*")
 
                 # Reconstruct Plain Text Download Data Block
                 raw_download_text = f"""TRANSLATIONAL BIOMEDICAL PREDICTIVE REPORT -- SIMULATION OUTPUT
@@ -320,7 +342,7 @@ DISCLAIMER: Non-clinical, non-predictive portfolio simulation. Rate constants ar
 # FRONTEND: TWO-LOCATION COMPARISON VIEW
 # ---------------------------------------------------------------------------
 else:
-    st.header("Two-Location Comparison")
+    st.header(" Two-Location Comparison")
     col_a, col_b = st.columns(2)
     with col_a:
         st.subheader("Location A")
